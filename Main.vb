@@ -19,7 +19,7 @@ Public Class Main
         End If '//创建图片暂存文件夹
         ReadSettingXml()
         If BgmId.Length > 0 Then
-            GroupBox1.Text = BgmId
+            GroupBox1.Text = "ID:" & BgmId
             SubjectRead(GetData("https://api.bgm.tv/v0/users/" & BgmId & "/collections?subject_type=2&type=3&limit=30&offset=0"))
         Else
             GroupBox1.Text = "null"
@@ -117,8 +117,12 @@ Public Class Main
         Dim request As HttpWebRequest = WebRequest.Create(url)
         request.UserAgent = "UkokuGemini/BgmReminder"
         request.Method = "GET"
-        Dim sr As StreamReader = New StreamReader(request.GetResponse().GetResponseStream)
-        Return sr.ReadToEnd
+        Try
+            Dim sr As StreamReader = New StreamReader(request.GetResponse().GetResponseStream)
+            Return sr.ReadToEnd
+        Catch ex As Exception
+            Return ""
+        End Try
     End Function
     Structure Subject
         Dim Name As String
