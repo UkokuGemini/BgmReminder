@@ -41,22 +41,25 @@ Partial Class Main
         'ListBox1
         '
         Me.ListBox1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.ListBox1.Font = New System.Drawing.Font("新細明體", 10.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.ListBox1.Font = New System.Drawing.Font("Microsoft YaHei UI", 10.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListBox1.FormattingEnabled = True
-        Me.ListBox1.ItemHeight = 14
-        Me.ListBox1.Location = New System.Drawing.Point(3, 20)
+        Me.ListBox1.ItemHeight = 20
+        Me.ListBox1.Location = New System.Drawing.Point(4, 22)
+        Me.ListBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.ListBox1.Name = "ListBox1"
-        Me.ListBox1.Size = New System.Drawing.Size(194, 216)
+        Me.ListBox1.Size = New System.Drawing.Size(225, 322)
         Me.ListBox1.TabIndex = 1
         '
         'GroupBox1
         '
         Me.GroupBox1.Controls.Add(Me.ListBox1)
         Me.GroupBox1.Dock = System.Windows.Forms.DockStyle.Left
-        Me.GroupBox1.Font = New System.Drawing.Font("新細明體", 10.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
+        Me.GroupBox1.Font = New System.Drawing.Font("Microsoft YaHei UI", 10.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox1.Location = New System.Drawing.Point(0, 0)
+        Me.GroupBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(200, 239)
+        Me.GroupBox1.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox1.Size = New System.Drawing.Size(233, 348)
         Me.GroupBox1.TabIndex = 2
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "GroupBox1"
@@ -64,9 +67,10 @@ Partial Class Main
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 239)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 348)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(859, 22)
+        Me.StatusStrip1.Padding = New System.Windows.Forms.Padding(1, 0, 16, 0)
+        Me.StatusStrip1.Size = New System.Drawing.Size(1002, 22)
         Me.StatusStrip1.TabIndex = 3
         Me.StatusStrip1.Text = "StatusStrip1"
         '
@@ -79,9 +83,10 @@ Partial Class Main
         'PictureBox1
         '
         Me.PictureBox1.Dock = System.Windows.Forms.DockStyle.Left
-        Me.PictureBox1.Location = New System.Drawing.Point(3, 20)
+        Me.PictureBox1.Location = New System.Drawing.Point(4, 22)
+        Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(168, 216)
+        Me.PictureBox1.Size = New System.Drawing.Size(196, 322)
         Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.PictureBox1.TabIndex = 4
         Me.PictureBox1.TabStop = False
@@ -89,9 +94,11 @@ Partial Class Main
         'RichTextBox1
         '
         Me.RichTextBox1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.RichTextBox1.Location = New System.Drawing.Point(171, 20)
+        Me.RichTextBox1.Font = New System.Drawing.Font("Microsoft YaHei UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.RichTextBox1.Location = New System.Drawing.Point(200, 22)
+        Me.RichTextBox1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.RichTextBox1.Name = "RichTextBox1"
-        Me.RichTextBox1.Size = New System.Drawing.Size(485, 216)
+        Me.RichTextBox1.Size = New System.Drawing.Size(565, 322)
         Me.RichTextBox1.TabIndex = 5
         Me.RichTextBox1.Text = ""
         '
@@ -100,10 +107,12 @@ Partial Class Main
         Me.GroupBox2.Controls.Add(Me.RichTextBox1)
         Me.GroupBox2.Controls.Add(Me.PictureBox1)
         Me.GroupBox2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.GroupBox2.Font = New System.Drawing.Font("新細明體", 10.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(136, Byte))
-        Me.GroupBox2.Location = New System.Drawing.Point(200, 0)
+        Me.GroupBox2.Font = New System.Drawing.Font("Microsoft YaHei UI", 10.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GroupBox2.Location = New System.Drawing.Point(233, 0)
+        Me.GroupBox2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(659, 239)
+        Me.GroupBox2.Padding = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.GroupBox2.Size = New System.Drawing.Size(769, 348)
         Me.GroupBox2.TabIndex = 6
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "播放信息"
@@ -115,14 +124,16 @@ Partial Class Main
         '
         'Main
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 17.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(859, 261)
+        Me.ClientSize = New System.Drawing.Size(1002, 370)
         Me.Controls.Add(Me.GroupBox2)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.StatusStrip1)
+        Me.Font = New System.Drawing.Font("Microsoft YaHei UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
-        Me.MinimumSize = New System.Drawing.Size(875, 300)
+        Me.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
+        Me.MinimumSize = New System.Drawing.Size(1018, 409)
         Me.Name = "Main"
         Me.Text = "Main"
         Me.GroupBox1.ResumeLayout(False)

@@ -28,15 +28,36 @@ Public Class Main
         FreshTimer.Enabled = True
     End Sub
     Private Sub FreshTimerE(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FreshTimer.Tick
+        ToolStripStatusLabel1.Text = ReminderTimStr()
         If Now.Second = 0 AndAlso Now.Minute = 0 Then
-            For i = 0 To SubjectArrList.Count - 1
-                Dim CompareSubject As Subject = SubjectArrList(i)
-                If EpRead(SubjectArrList(i)).epDates <> CompareSubject.epDates Then
-                    ToolStripStatusLabel1.Text = PostData(PushUrl, CompareSubject.Name)
-                End If
-            Next
+            CheckNew()
         End If
     End Sub '刷新计时器
+    Sub CheckNew()
+        For i = 0 To SubjectArrList.Count - 1
+            Dim oldSubject As Subject = SubjectArrList(i)
+            Dim newSubject As Subject = EpRead(oldSubject)
+            If newSubject.epDates <> oldSubject.epDates Then
+                Dim PushStr As String = newSubject.Name & "(ep." & newSubject.epNum & ")" & vbCrLf
+                PushStr &= " 【" & newSubject.epName & "】@" & newSubject.epDates.ToShortDateString
+                PostData(PushUrl, PushStr)
+                SubjectArrList(i) = newSubject
+            End If
+        Next
+    End Sub
+    Function ReminderTimStr() As String
+        Dim ClockTime As Date = DateAdd(DateInterval.Hour, 1, Now)
+        Return CulCulateLastTimeText(DateDiff(DateInterval.Second, Now, Convert.ToDateTime(ClockTime.ToShortDateString & " " & ClockTime.Hour & ":00:00")), 1)
+    End Function
+    Public Function CulCulateLastTimeText(ByVal Time As Int64, ByVal IntevalType As Integer) As String
+        Dim H, M, S As Int64
+        H = Int(Time / 3600)
+        Time = Time Mod 3600
+        M = Int(Time / 60)
+        S = Time Mod 60
+        Return "检查倒计时：" & H & ":" & M & ":" & S
+    End Function '显示时间
+
     Public Function PostData(ByVal Url As String, ByVal MessageStr As String) As String
         Dim ResStr As String = ""
         If Url.Length > 0 Then
@@ -70,7 +91,7 @@ Public Class Main
                 ResStr = "发送失败！{" & ex.Message.ToString & "}"
             End Try
         Else
-            resstr = "空白推送地址"
+            ResStr = "空白推送地址"
         End If
         Return ResStr
     End Function
@@ -107,7 +128,7 @@ Public Class Main
         Dim epDates As Date
         Dim epName_Next As String
         Dim epDates_Next As Date
-        Dim epnum As Integer
+        Dim epNum As Integer
     End Structure
     Dim SubjectArrList As New ArrayList
     Dim json As JObject
@@ -127,6 +148,9 @@ Public Class Main
                 jt = json("subject").ToString
                 json = JsonConvert.DeserializeObject(jt.ToString)
                 SubjectInfo.Name = json("name_cn").ToString
+                If SubjectInfo.Name.Length <= 0 Then
+                    SubjectInfo.Name = json("name")
+                End If
                 ListBox1.Items.Add(SubjectInfo.Name)
                 jt = json("images").ToString
                 json = JsonConvert.DeserializeObject(jt.ToString)
@@ -134,7 +158,6 @@ Public Class Main
                 SubjectInfo = EpRead(SubjectInfo)
                 SubjectArrList.Add(SubjectInfo)
             Next
-            ToolStripStatusLabel1.Text = "【" & SubjectArrList.Count & "】个动漫监控中…"
         Catch ex As Exception
         End Try
     End Sub
@@ -154,7 +177,7 @@ Public Class Main
             If epName_temp.Length > 0 AndAlso epDates_temp < Now Then
                 SubjectInfo_ep.epName = epName_temp
                 SubjectInfo_ep.epDates = epDates_temp
-                SubjectInfo_ep.epnum = epNum_temp
+                SubjectInfo_ep.epNum = epNum_temp
             ElseIf NextFlag = False AndAlso epDates_temp > Now Then
                 NextFlag = True
                 SubjectInfo_ep.epName_Next = epName_temp
@@ -169,18 +192,22 @@ Public Class Main
             'PictureBox1.Image =
             Dim ShowSubject As Subject = SubjectArrList(ListBox1.SelectedIndex)
             RichTextBox1.Text &= ShowSubject.Name & "(Id" & ShowSubject.SubId & ")" & vbCrLf
-            RichTextBox1.Text &= "近期播放：[ep." & ShowSubject.epnum & "]" & vbCrLf
-            RichTextBox1.Text &= "@" & ShowSubject.epDates & "【" & ShowSubject.epName & "】" & vbCrLf
-            RichTextBox1.Text &= "下次播放" & vbCrLf & "@" & ShowSubject.epDates_Next & "【" & ShowSubject.epName_Next & "】"
+            RichTextBox1.Text &= "近期播放：[ep." & ShowSubject.epNum & "]" & vbCrLf
+            RichTextBox1.Text &= "@" & ShowSubject.epDates.ToShortDateString & "【" & ShowSubject.epName & "】" & vbCrLf
+            If ShowSubject.epDates_Next < Convert.ToDateTime("1/1/0002") Then
+                RichTextBox1.Text &= "已完结."
+            Else
+                RichTextBox1.Text &= "下次播放：" & vbCrLf & "@" & ShowSubject.epDates_Next.ToShortDateString & "【" & ShowSubject.epName_Next & "】"
+            End If
             Try
                 Dim ImageTempPath As String = System.Environment.CurrentDirectory & "\ImageTempPath\" & ShowSubject.SubId & ".jpg"
                 If IO.File.Exists(ImageTempPath) Then
                     Me.PictureBox1.Image = New Bitmap(ImageTempPath)
                 Else
                     Dim wr As WebRequest = WebRequest.Create(ShowSubject.Picurl)
-                Dim res As WebResponse = wr.GetResponse
-                Me.PictureBox1.Image = New Bitmap(res.GetResponseStream)
-                Me.PictureBox1.Image.Save(ImageTempPath)
+                    Dim res As WebResponse = wr.GetResponse
+                    Me.PictureBox1.Image = New Bitmap(res.GetResponseStream)
+                    Me.PictureBox1.Image.Save(ImageTempPath)
                 End If
             Catch ex As Exception
             End Try
@@ -199,5 +226,13 @@ Public Class Main
 
     Private Sub NotifyIcon1_Click(sender As Object, e As EventArgs) Handles NotifyIcon1.Click
         Me.WindowState = FormWindowState.Normal
+    End Sub
+
+    Private Sub ToolStripStatusLabel1_DoubleClick(sender As Object, e As EventArgs) Handles ToolStripStatusLabel1.Click
+
+        ToolStripStatusLabel1.Text = "正在检查…"
+        ToolStripStatusLabel1.Enabled = False
+        CheckNew()
+        ToolStripStatusLabel1.Enabled = True
     End Sub
 End Class
