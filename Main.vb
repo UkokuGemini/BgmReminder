@@ -12,6 +12,11 @@ Public Class Main
     Dim PushUrl As String
     Friend WithEvents FreshTimer As New System.Windows.Forms.Timer
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Me.Text = My.Application.Info.AssemblyName & "[" & My.Application.Info.Version.ToString & "]"
+        Me.CenterToScreen()
+        If IO.Directory.Exists(System.Environment.CurrentDirectory & "\ImageTempPath\") = False Then
+            IO.Directory.CreateDirectory(System.Environment.CurrentDirectory & "\ImageTempPath\")
+        End If '//创建图片暂存文件夹
         ReadSettingXml()
         If BgmId.Length > 0 Then
             GroupBox1.Text = BgmId
@@ -23,37 +28,50 @@ Public Class Main
         FreshTimer.Enabled = True
     End Sub
     Private Sub FreshTimerE(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FreshTimer.Tick
-        If Now.Second = 0 Then
+        If Now.Second = 0 AndAlso Now.Minute = 0 Then
             For i = 0 To SubjectArrList.Count - 1
                 Dim CompareSubject As Subject = SubjectArrList(i)
                 If EpRead(SubjectArrList(i)).epDates <> CompareSubject.epDates Then
-                    PostData(PushUrl, CompareSubject.Name)
+                    ToolStripStatusLabel1.Text = PostData(PushUrl, CompareSubject.Name)
                 End If
             Next
         End If
     End Sub '刷新计时器
     Public Function PostData(ByVal Url As String, ByVal MessageStr As String) As String
-        ServicePointManager.Expect100Continue = False
-        Dim request As HttpWebRequest
-        Dim Encoding As New UTF8Encoding()
-        request = WebRequest.Create(Url)
-        request.ContentType = "application/json"
-        request.Method = "POST"
-        Dim Bytes_Temp As Byte() = Encoding.GetBytes(MessageStr)
-        '设置请求的 ContentLength 
-        request.ContentLength = Bytes_Temp.Length
-        '获得请 求流
         Dim ResStr As String = ""
-        Try
-            Dim newStream As Stream = request.GetRequestStream()
-            newStream.Write(Bytes_Temp, 0, Bytes_Temp.Length)
-            newStream.Close()
-            '获得响应流
-            Dim sr As StreamReader = New StreamReader(request.GetResponse().GetResponseStream)
-            ResStr = sr.ReadToEnd()
-        Catch ex As Exception
-            ResStr = "发送失败！{" & ex.Message.ToString & "}"
-        End Try
+        If Url.Length > 0 Then
+            ServicePointManager.Expect100Continue = False
+            Dim request As HttpWebRequest
+            Dim Encoding As New UTF8Encoding()
+            request = WebRequest.Create(Url)
+            request.ContentType = "application/json"
+            MessageStr &= "\r\r" & "[" & Format(Now, "yyyy-MM-dd HH:mm") & "] Push From @Bark"
+            MessageStr = Replace(MessageStr, "<", "《")
+            MessageStr = Replace(MessageStr, ">", "》")
+            MessageStr = Replace(MessageStr, "/", "\\")
+            MessageStr = Replace(MessageStr, vbCrLf, "\r")
+            MessageStr = Replace(MessageStr, vbLf, "\r")
+            MessageStr = Replace(MessageStr, Chr(13), "\r")
+            MessageStr = Replace(MessageStr, Chr(34), "'")
+            MessageStr = "{" & Chr(34) & "title" & Chr(34) & ":" & Chr(34) & Application.ProductName & "" & Chr(34) & "," & Chr(34) & "body" & Chr(34) & ":" & Chr(34) & "\r" & MessageStr & Chr(34) & "}"
+            request.Method = "POST"
+            Dim Bytes_Temp As Byte() = Encoding.GetBytes(MessageStr)
+            '设置请求的 ContentLength 
+            request.ContentLength = Bytes_Temp.Length
+            '获得请 求流
+            Try
+                Dim newStream As Stream = request.GetRequestStream()
+                newStream.Write(Bytes_Temp, 0, Bytes_Temp.Length)
+                newStream.Close()
+                '获得响应流
+                Dim sr As StreamReader = New StreamReader(request.GetResponse().GetResponseStream)
+                ResStr = sr.ReadToEnd()
+            Catch ex As Exception
+                ResStr = "发送失败！{" & ex.Message.ToString & "}"
+            End Try
+        Else
+            resstr = "空白推送地址"
+        End If
         Return ResStr
     End Function
     Sub ReadSettingXml()
@@ -68,6 +86,7 @@ Public Class Main
                 xmlDoc.Load(SettingPath)
                 'Dim NodeList_Version As XmlNodeList = xmlDoc.SelectSingleNode("KavSetting").SelectSingleNode("UpdateLog").ChildNodes '获取节点的所有子节点
                 BgmId = CType(xmlDoc.SelectSingleNode("BgmReminderSetting").SelectSingleNode("BgmId"), XmlElement).InnerText
+                PushUrl = CType(xmlDoc.SelectSingleNode("BgmReminderSetting").SelectSingleNode("PushUrl"), XmlElement).InnerText
             End If
         Catch ex As Exception
         End Try
@@ -88,6 +107,7 @@ Public Class Main
         Dim epDates As Date
         Dim epName_Next As String
         Dim epDates_Next As Date
+        Dim epnum As Integer
     End Structure
     Dim SubjectArrList As New ArrayList
     Dim json As JObject
@@ -114,33 +134,70 @@ Public Class Main
                 SubjectInfo = EpRead(SubjectInfo)
                 SubjectArrList.Add(SubjectInfo)
             Next
+            ToolStripStatusLabel1.Text = "【" & SubjectArrList.Count & "】个动漫监控中…"
         Catch ex As Exception
         End Try
     End Sub
-    Function EpRead(ByVal SubjectInfo_ep As Subject, Optional Compare As Boolean = False) As Subject
+    Function EpRead(ByVal SubjectInfo_ep As Subject) As Subject
         json = JsonConvert.DeserializeObject(GetData("https://api.bgm.tv/v0/episodes?subject_id=" & SubjectInfo_ep.SubId & "&type=0&limit=100&offset=0"))
         jt = json("data")
         Dim jarray As JArray = JsonConvert.DeserializeObject(jt.ToString)
         Dim epName_temp As String
         Dim epDates_temp As String
+        Dim epNum_temp As Integer
         Dim NextFlag As Boolean = False
         For i = 0 To jarray.Count - 1
             json = JsonConvert.DeserializeObject(jarray(i).ToString)
             epDates_temp = json("airdate").ToString
             epName_temp = json("name").ToString
-            If epName_temp.Length > 0 Then
+            epNum_temp = json("ep")
+            If epName_temp.Length > 0 AndAlso epDates_temp < Now Then
                 SubjectInfo_ep.epName = epName_temp
                 SubjectInfo_ep.epDates = epDates_temp
-            ElseIf NextFlag = False Then
+                SubjectInfo_ep.epnum = epNum_temp
+            ElseIf NextFlag = False AndAlso epDates_temp > Now Then
                 NextFlag = True
                 SubjectInfo_ep.epName_Next = epName_temp
                 SubjectInfo_ep.epDates_Next = epDates_temp
             End If
-            If Compare Then
-
-            End If
         Next
         Return SubjectInfo_ep
     End Function
+    Private Sub ListBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ListBox1.SelectedIndexChanged
+        RichTextBox1.Text = ""
+        If ListBox1.SelectedIndex >= 0 AndAlso ListBox1.SelectedIndex < ListBox1.Items.Count Then
+            'PictureBox1.Image =
+            Dim ShowSubject As Subject = SubjectArrList(ListBox1.SelectedIndex)
+            RichTextBox1.Text &= ShowSubject.Name & "(Id" & ShowSubject.SubId & ")" & vbCrLf
+            RichTextBox1.Text &= "近期播放：[ep." & ShowSubject.epnum & "]" & vbCrLf
+            RichTextBox1.Text &= "@" & ShowSubject.epDates & "【" & ShowSubject.epName & "】" & vbCrLf
+            RichTextBox1.Text &= "下次播放" & vbCrLf & "@" & ShowSubject.epDates_Next & "【" & ShowSubject.epName_Next & "】"
+            Try
+                Dim ImageTempPath As String = System.Environment.CurrentDirectory & "\ImageTempPath\" & ShowSubject.SubId & ".jpg"
+                If IO.File.Exists(ImageTempPath) Then
+                    Me.PictureBox1.Image = New Bitmap(ImageTempPath)
+                Else
+                    Dim wr As WebRequest = WebRequest.Create(ShowSubject.Picurl)
+                Dim res As WebResponse = wr.GetResponse
+                Me.PictureBox1.Image = New Bitmap(res.GetResponseStream)
+                Me.PictureBox1.Image.Save(ImageTempPath)
+                End If
+            Catch ex As Exception
+            End Try
+        End If
+    End Sub
 
+    Private Sub Main_Resize(sender As Object, e As EventArgs) Handles MyBase.Resize
+        If Me.WindowState = FormWindowState.Minimized Then
+            Me.ShowInTaskbar = False
+            NotifyIcon1.Visible = True
+        Else
+            Me.ShowInTaskbar = True
+            NotifyIcon1.Visible = False
+        End If
+    End Sub
+
+    Private Sub NotifyIcon1_Click(sender As Object, e As EventArgs) Handles NotifyIcon1.Click
+        Me.WindowState = FormWindowState.Normal
+    End Sub
 End Class
