@@ -21,6 +21,7 @@ Public Class Main
         If BgmId.Length > 0 Then
             GroupBox1.Text = "ID:" & BgmId
             SubjectRead(GetData("https://api.bgm.tv/v0/users/" & BgmId & "/collections?subject_type=2&type=3&limit=30&offset=0"))
+            Dim k = SubjectArrList.Count
         Else
             GroupBox1.Text = "null"
         End If
@@ -146,7 +147,7 @@ Public Class Main
             jt = json("data")
             Dim jarray As JArray = JsonConvert.DeserializeObject(jt.ToString)
             For i = 0 To jarray.Count - 1
-                Dim SubjectInfo As Subject
+                Dim SubjectInfo As New Subject
                 json = JsonConvert.DeserializeObject(jarray(i).ToString)
                 SubjectInfo.SubId = json("subject_id").ToString
                 jt = json("subject").ToString
@@ -169,20 +170,20 @@ Public Class Main
         json = JsonConvert.DeserializeObject(GetData("https://api.bgm.tv/v0/episodes?subject_id=" & SubjectInfo_ep.SubId & "&type=0&limit=100&offset=0"))
         jt = json("data")
         Dim jarray As JArray = JsonConvert.DeserializeObject(jt.ToString)
-        Dim epName_temp As String
-        Dim epDates_temp As String
-        Dim epNum_temp As Integer
         Dim NextFlag As Boolean = False
         For i = 0 To jarray.Count - 1
+            Dim epName_temp As String
+            Dim epDates_temp As String
+            Dim epNum_temp As Integer
             json = JsonConvert.DeserializeObject(jarray(i).ToString)
             epDates_temp = json("airdate").ToString
             epName_temp = json("name").ToString
             epNum_temp = json("ep")
-            If epName_temp.Length > 0 AndAlso epDates_temp < Now Then
+            If epDates_temp < Now Then
                 SubjectInfo_ep.epName = epName_temp
                 SubjectInfo_ep.epDates = epDates_temp
                 SubjectInfo_ep.epNum = epNum_temp
-            ElseIf NextFlag = False AndAlso epDates_temp > Now Then
+            ElseIf NextFlag = False Then
                 NextFlag = True
                 SubjectInfo_ep.epName_Next = epName_temp
                 SubjectInfo_ep.epDates_Next = epDates_temp
