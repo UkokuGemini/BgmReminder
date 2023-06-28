@@ -20,8 +20,7 @@ Public Class Main
         ReadSettingXml()
         If BgmId.Length > 0 Then
             GroupBox1.Text = "ID:" & BgmId
-            SubjectRead(GetData("https://api.bgm.tv/v0/users/" & BgmId & "/collections?subject_type=2&type=3&limit=30&offset=0"))
-            Dim k = SubjectArrList.Count
+            RichTextBox2.Text &= SubjectRead(GetData("https://api.bgm.tv/v0/users/" & BgmId & "/collections?subject_type=2&type=3&limit=30&offset=0"))
         Else
             GroupBox1.Text = "null"
         End If
@@ -32,15 +31,20 @@ Public Class Main
         ToolStripStatusLabel1.Text = ReminderTimStr()
         If Now.Second = 0 AndAlso Now.Minute = 0 Then
             CheckNew()
+            If Now.Hour = 0 Then
+                RichTextBox2.Text &= SubjectRead(GetData("https://api.bgm.tv/v0/users/" & BgmId & "/collections?subject_type=2&type=3&limit=30&offset=0"))
+            End If
         End If
     End Sub '刷新计时器
     Sub CheckNew()
+        RichTextBox2.Text &= "> " & "[" & Now.ToString & "]运行检测." & vbCrLf
         For i = 0 To SubjectArrList.Count - 1
             Dim oldSubject As Subject = SubjectArrList(i)
             Dim newSubject As Subject = EpRead(oldSubject)
             If newSubject.epDates <> oldSubject.epDates Then
                 Dim PushStr As String = newSubject.Name & "(ep." & newSubject.epNum & ")" & vbCrLf
                 PushStr &= " 【" & newSubject.epName & "】@" & newSubject.epDates.ToShortDateString
+                RichTextBox2.Text &= vbTab & "> " & "[" & Now.ToString & "]" & PushStr & vbCrLf
                 PostData(PushUrl, PushStr)
                 SubjectArrList(i) = newSubject
             End If
@@ -58,7 +62,6 @@ Public Class Main
         S = Time Mod 60
         Return "检查倒计时：" & H & ":" & M & ":" & S
     End Function '显示时间
-
     Public Function PostData(ByVal Url As String, ByVal MessageStr As String) As String
         Dim ResStr As String = ""
         If Url.Length > 0 Then
@@ -138,7 +141,7 @@ Public Class Main
     Dim SubjectArrList As New ArrayList
     Dim json As JObject
     Dim jt As JToken
-    Sub SubjectRead(ByVal JsonStr As String)
+    Function SubjectRead(ByVal JsonStr As String) As String
         ListBox1.Items.Clear()
         SubjectArrList.Clear()
         Dim res As String = ""
@@ -165,7 +168,8 @@ Public Class Main
             Next
         Catch ex As Exception
         End Try
-    End Sub
+        Return "> " & "[" & Now.ToString & "]获取【" & BgmId & "】(" & SubjectArrList.Count & ")个监测项." & vbCrLf
+    End Function
     Function EpRead(ByVal SubjectInfo_ep As Subject) As Subject
         json = JsonConvert.DeserializeObject(GetData("https://api.bgm.tv/v0/episodes?subject_id=" & SubjectInfo_ep.SubId & "&type=0&limit=100&offset=0"))
         jt = json("data")
@@ -194,7 +198,7 @@ Public Class Main
     Private Sub ListBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ListBox1.SelectedIndexChanged
         RichTextBox1.Text = ""
         If ListBox1.SelectedIndex >= 0 AndAlso ListBox1.SelectedIndex < ListBox1.Items.Count Then
-            'PictureBox1.Image =
+            TabControl1.SelectedIndex = 1
             Dim ShowSubject As Subject = SubjectArrList(ListBox1.SelectedIndex)
             RichTextBox1.Text &= ShowSubject.Name & "(Id" & ShowSubject.SubId & ")" & vbCrLf
             RichTextBox1.Text &= "近期播放：[ep." & ShowSubject.epNum & "]" & vbCrLf
@@ -218,7 +222,6 @@ Public Class Main
             End Try
         End If
     End Sub
-
     Private Sub Main_Resize(sender As Object, e As EventArgs) Handles MyBase.Resize
         If Me.WindowState = FormWindowState.Minimized Then
             Me.ShowInTaskbar = False
@@ -228,16 +231,39 @@ Public Class Main
             NotifyIcon1.Visible = False
         End If
     End Sub
-
     Private Sub NotifyIcon1_Click(sender As Object, e As EventArgs) Handles NotifyIcon1.Click
         Me.WindowState = FormWindowState.Normal
     End Sub
-
     Private Sub ToolStripStatusLabel1_DoubleClick(sender As Object, e As EventArgs) Handles ToolStripStatusLabel1.Click
-
         ToolStripStatusLabel1.Text = "正在检查…"
         ToolStripStatusLabel1.Enabled = False
         CheckNew()
         ToolStripStatusLabel1.Enabled = True
+    End Sub
+    Private Sub RichTextBox2_TextChanged(sender As Object, e As EventArgs) Handles RichTextBox2.TextChanged
+        RichTextBox2.ScrollToCaret()
+    End Sub
+    Private Sub 推送消息测试ToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles 推送消息测试ToolStripMenuItem.Click
+        推送消息测试ToolStripMenuItem.Text = "正在发送测试信息…"
+        推送消息测试ToolStripMenuItem.Enabled = False
+        PostData(PushUrl, "推送消息测试")
+        推送消息测试ToolStripMenuItem.Text = "推送消息测试"
+        推送消息测试ToolStripMenuItem.Enabled = True
+    End Sub
+    Private Sub 打开文件夹ToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles 打开文件夹ToolStripMenuItem.Click
+        Diagnostics.Process.Start(System.Environment.CurrentDirectory)
+    End Sub
+    Private Sub 打开BangumiToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles 打开BangumiToolStripMenuItem.Click
+        Diagnostics.Process.Start("https://bangumi.tv/")
+    End Sub
+    Private Sub ToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem1.Click
+
+        If BgmId.Length > 0 Then
+            ToolStripMenuItem1.Text = "正在获取…"
+            ToolStripMenuItem1.Enabled = False
+            RichTextBox2.Text &= SubjectRead(GetData("https://api.bgm.tv/v0/users/" & BgmId & "/collections?subject_type=2&type=3&limit=30&offset=0"))
+            ToolStripMenuItem1.Text = "刷新订阅"
+            ToolStripMenuItem1.Enabled = True
+        End If
     End Sub
 End Class
