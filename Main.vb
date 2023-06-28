@@ -257,7 +257,6 @@ Public Class Main
         Diagnostics.Process.Start("https://bangumi.tv/")
     End Sub
     Private Sub ToolStripMenuItem1_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem1.Click
-
         If BgmId.Length > 0 Then
             ToolStripMenuItem1.Text = "正在获取…"
             ToolStripMenuItem1.Enabled = False
