@@ -181,7 +181,10 @@ Public Class Main
             Dim epNum_temp As Integer
             json = JsonConvert.DeserializeObject(jarray(i).ToString)
             epDates_temp = json("airdate").ToString
-            epName_temp = json("name").ToString
+            epName_temp = json("name_cn").ToString
+            If epName_temp.Length <= 0 Then
+                epName_temp = json("name").ToString
+            End If
             epNum_temp = json("ep")
             If epDates_temp < Now Then
                 SubjectInfo_ep.epName = epName_temp
