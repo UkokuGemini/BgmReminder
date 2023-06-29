@@ -105,13 +105,26 @@ Public Class Main
             Dim SettingXml As String = ""
             If IO.File.Exists(SettingPath) Then
                 SettingXml = IO.File.ReadAllText(SettingPath)
-            End If
-            If SettingXml.Length > 0 Then
-                Dim xmlDoc As New XmlDocument()
-                xmlDoc.Load(SettingPath)
-                'Dim NodeList_Version As XmlNodeList = xmlDoc.SelectSingleNode("KavSetting").SelectSingleNode("UpdateLog").ChildNodes '获取节点的所有子节点
-                BgmId = CType(xmlDoc.SelectSingleNode("BgmReminderSetting").SelectSingleNode("BgmId"), XmlElement).InnerText
-                PushUrl = CType(xmlDoc.SelectSingleNode("BgmReminderSetting").SelectSingleNode("PushUrl"), XmlElement).InnerText
+                If SettingXml.Length > 0 Then
+                    Dim xmlDoc As New XmlDocument()
+                    xmlDoc.Load(SettingPath)
+                    'Dim NodeList_Version As XmlNodeList = xmlDoc.SelectSingleNode("KavSetting").SelectSingleNode("UpdateLog").ChildNodes '获取节点的所有子节点
+                    BgmId = CType(xmlDoc.SelectSingleNode("BgmReminderSetting").SelectSingleNode("BgmId"), XmlElement).InnerText
+                    PushUrl = CType(xmlDoc.SelectSingleNode("BgmReminderSetting").SelectSingleNode("PushUrl"), XmlElement).InnerText
+                    If BgmId.Length <= 0 Then
+                        MessageBox.Show("请正确配置Bangumi账号<bgmId>.")
+                        Diagnostics.Process.Start("notepad.exe", SettingPath)
+                        'Me.Close()
+                    ElseIf PushUrl.Length <= 0 Then
+                        MessageBox.Show("请正确配置推送地址<PushUrl>.")
+                        Diagnostics.Process.Start("notepad.exe", SettingPath)
+                        'Me.Close()
+                    End If
+                Else
+                    MessageBox.Show("空白的配置文件" & SettingPath)
+                End If
+            Else
+                MessageBox.Show("没有配置文件" & SettingPath)
             End If
         Catch ex As Exception
         End Try
@@ -244,6 +257,7 @@ Public Class Main
         ToolStripStatusLabel1.Enabled = True
     End Sub
     Private Sub RichTextBox2_TextChanged(sender As Object, e As EventArgs) Handles RichTextBox2.TextChanged
+        RichTextBox2.Select(RichTextBox2.TextLength, 0)
         RichTextBox2.ScrollToCaret()
     End Sub
     Private Sub 推送消息测试ToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles 推送消息测试ToolStripMenuItem.Click
@@ -267,5 +281,8 @@ Public Class Main
             ToolStripMenuItem1.Text = "刷新订阅"
             ToolStripMenuItem1.Enabled = True
         End If
+    End Sub
+    Private Sub ToolStripMenuItem2_Click(sender As Object, e As EventArgs) Handles ToolStripMenuItem2.Click
+        RichTextBox2.Text = ""
     End Sub
 End Class

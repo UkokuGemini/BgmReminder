@@ -26,6 +26,8 @@ Partial Class Main
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Main))
         Me.ListBox1 = New System.Windows.Forms.ListBox()
         Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.MenuStrip2 = New System.Windows.Forms.MenuStrip()
+        Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
@@ -39,20 +41,22 @@ Partial Class Main
         Me.打开文件夹ToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.MenuStrip1 = New System.Windows.Forms.MenuStrip()
         Me.打开BangumiToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.MenuStrip2 = New System.Windows.Forms.MenuStrip()
-        Me.ToolStripMenuItem1 = New System.Windows.Forms.ToolStripMenuItem()
+        Me.MenuStrip3 = New System.Windows.Forms.MenuStrip()
+        Me.ToolStripMenuItem2 = New System.Windows.Forms.ToolStripMenuItem()
         Me.GroupBox1.SuspendLayout()
+        Me.MenuStrip2.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabControl1.SuspendLayout()
         Me.TabPage2.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.MenuStrip1.SuspendLayout()
-        Me.MenuStrip2.SuspendLayout()
+        Me.MenuStrip3.SuspendLayout()
         Me.SuspendLayout()
         '
         'ListBox1
         '
+        Me.ListBox1.BackColor = System.Drawing.SystemColors.Control
         Me.ListBox1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.ListBox1.Font = New System.Drawing.Font("Microsoft YaHei UI", 10.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ListBox1.FormattingEnabled = True
@@ -79,6 +83,26 @@ Partial Class Main
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "GroupBox1"
         '
+        'MenuStrip2
+        '
+        Me.MenuStrip2.AutoSize = False
+        Me.MenuStrip2.BackColor = System.Drawing.SystemColors.Control
+        Me.MenuStrip2.Font = New System.Drawing.Font("Microsoft YaHei UI Light", 7.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItem1})
+        Me.MenuStrip2.Location = New System.Drawing.Point(4, 22)
+        Me.MenuStrip2.Name = "MenuStrip2"
+        Me.MenuStrip2.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
+        Me.MenuStrip2.Size = New System.Drawing.Size(225, 20)
+        Me.MenuStrip2.TabIndex = 9
+        Me.MenuStrip2.Text = "MenuStrip2"
+        '
+        'ToolStripMenuItem1
+        '
+        Me.ToolStripMenuItem1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
+        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(59, 20)
+        Me.ToolStripMenuItem1.Text = "刷新订阅"
+        '
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1})
@@ -97,23 +121,25 @@ Partial Class Main
         '
         'PictureBox1
         '
+        Me.PictureBox1.BackColor = System.Drawing.SystemColors.Control
         Me.PictureBox1.Dock = System.Windows.Forms.DockStyle.Left
         Me.PictureBox1.Location = New System.Drawing.Point(3, 3)
         Me.PictureBox1.Margin = New System.Windows.Forms.Padding(4)
         Me.PictureBox1.Name = "PictureBox1"
-        Me.PictureBox1.Size = New System.Drawing.Size(196, 312)
+        Me.PictureBox1.Size = New System.Drawing.Size(196, 287)
         Me.PictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.PictureBox1.TabIndex = 4
         Me.PictureBox1.TabStop = False
         '
         'RichTextBox1
         '
+        Me.RichTextBox1.BackColor = System.Drawing.SystemColors.Control
         Me.RichTextBox1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.RichTextBox1.Font = New System.Drawing.Font("Microsoft YaHei UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.RichTextBox1.Location = New System.Drawing.Point(199, 3)
         Me.RichTextBox1.Margin = New System.Windows.Forms.Padding(4)
         Me.RichTextBox1.Name = "RichTextBox1"
-        Me.RichTextBox1.Size = New System.Drawing.Size(559, 312)
+        Me.RichTextBox1.Size = New System.Drawing.Size(559, 287)
         Me.RichTextBox1.TabIndex = 5
         Me.RichTextBox1.Text = ""
         '
@@ -135,14 +161,15 @@ Partial Class Main
         '
         'TabPage2
         '
+        Me.TabPage2.BackColor = System.Drawing.SystemColors.Control
         Me.TabPage2.Controls.Add(Me.RichTextBox2)
+        Me.TabPage2.Controls.Add(Me.MenuStrip3)
         Me.TabPage2.Location = New System.Drawing.Point(4, 26)
         Me.TabPage2.Name = "TabPage2"
         Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage2.Size = New System.Drawing.Size(761, 293)
         Me.TabPage2.TabIndex = 1
         Me.TabPage2.Text = "日志信息"
-        Me.TabPage2.UseVisualStyleBackColor = True
         '
         'RichTextBox2
         '
@@ -152,21 +179,21 @@ Partial Class Main
         Me.RichTextBox2.Margin = New System.Windows.Forms.Padding(4)
         Me.RichTextBox2.Name = "RichTextBox2"
         Me.RichTextBox2.ReadOnly = True
-        Me.RichTextBox2.Size = New System.Drawing.Size(755, 287)
+        Me.RichTextBox2.Size = New System.Drawing.Size(755, 267)
         Me.RichTextBox2.TabIndex = 6
         Me.RichTextBox2.Text = ""
         '
         'TabPage1
         '
+        Me.TabPage1.BackColor = System.Drawing.SystemColors.Control
         Me.TabPage1.Controls.Add(Me.RichTextBox1)
         Me.TabPage1.Controls.Add(Me.PictureBox1)
         Me.TabPage1.Location = New System.Drawing.Point(4, 26)
         Me.TabPage1.Name = "TabPage1"
         Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage1.Size = New System.Drawing.Size(761, 318)
+        Me.TabPage1.Size = New System.Drawing.Size(761, 293)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "播放信息"
-        Me.TabPage1.UseVisualStyleBackColor = True
         '
         '推送消息测试ToolStripMenuItem
         '
@@ -183,6 +210,7 @@ Partial Class Main
         '
         'MenuStrip1
         '
+        Me.MenuStrip1.BackColor = System.Drawing.SystemColors.Control
         Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.推送消息测试ToolStripMenuItem, Me.打开文件夹ToolStripMenuItem, Me.打开BangumiToolStripMenuItem})
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
@@ -196,24 +224,26 @@ Partial Class Main
         Me.打开BangumiToolStripMenuItem.Size = New System.Drawing.Size(95, 21)
         Me.打开BangumiToolStripMenuItem.Text = "打开Bangumi"
         '
-        'MenuStrip2
+        'MenuStrip3
         '
-        Me.MenuStrip2.AutoSize = False
-        Me.MenuStrip2.Font = New System.Drawing.Font("Microsoft YaHei UI Light", 7.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.MenuStrip2.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItem1})
-        Me.MenuStrip2.Location = New System.Drawing.Point(4, 22)
-        Me.MenuStrip2.Name = "MenuStrip2"
-        Me.MenuStrip2.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
-        Me.MenuStrip2.Size = New System.Drawing.Size(225, 20)
-        Me.MenuStrip2.TabIndex = 9
-        Me.MenuStrip2.Text = "MenuStrip2"
+        Me.MenuStrip3.AutoSize = False
+        Me.MenuStrip3.BackColor = System.Drawing.SystemColors.Control
+        Me.MenuStrip3.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.MenuStrip3.Font = New System.Drawing.Font("Microsoft YaHei UI Light", 7.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.MenuStrip3.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripMenuItem2})
+        Me.MenuStrip3.Location = New System.Drawing.Point(3, 270)
+        Me.MenuStrip3.Name = "MenuStrip3"
+        Me.MenuStrip3.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
+        Me.MenuStrip3.Size = New System.Drawing.Size(755, 20)
+        Me.MenuStrip3.TabIndex = 10
+        Me.MenuStrip3.Text = "MenuStrip3"
         '
-        'ToolStripMenuItem1
+        'ToolStripMenuItem2
         '
-        Me.ToolStripMenuItem1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        Me.ToolStripMenuItem1.Name = "ToolStripMenuItem1"
-        Me.ToolStripMenuItem1.Size = New System.Drawing.Size(59, 20)
-        Me.ToolStripMenuItem1.Text = "刷新订阅"
+        Me.ToolStripMenuItem2.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.ToolStripMenuItem2.Name = "ToolStripMenuItem2"
+        Me.ToolStripMenuItem2.Size = New System.Drawing.Size(59, 20)
+        Me.ToolStripMenuItem2.Text = "清空日志"
         '
         'Main
         '
@@ -231,6 +261,8 @@ Partial Class Main
         Me.Name = "Main"
         Me.Text = "Main"
         Me.GroupBox1.ResumeLayout(False)
+        Me.MenuStrip2.ResumeLayout(False)
+        Me.MenuStrip2.PerformLayout()
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -239,8 +271,8 @@ Partial Class Main
         Me.TabPage1.ResumeLayout(False)
         Me.MenuStrip1.ResumeLayout(False)
         Me.MenuStrip1.PerformLayout()
-        Me.MenuStrip2.ResumeLayout(False)
-        Me.MenuStrip2.PerformLayout()
+        Me.MenuStrip3.ResumeLayout(False)
+        Me.MenuStrip3.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -262,4 +294,6 @@ Partial Class Main
     Friend WithEvents 打开BangumiToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents MenuStrip2 As MenuStrip
     Friend WithEvents ToolStripMenuItem1 As ToolStripMenuItem
+    Friend WithEvents MenuStrip3 As MenuStrip
+    Friend WithEvents ToolStripMenuItem2 As ToolStripMenuItem
 End Class
