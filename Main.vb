@@ -68,7 +68,7 @@ Public Class Main
             ServicePointManager.Expect100Continue = False
             Dim request As HttpWebRequest
             Dim Encoding As New UTF8Encoding()
-            request = WebRequest.Create(Url)
+            request = WebRequest.Create(Url & "?group=" & "BgmReminder[" & BgmId & "]")
             request.ContentType = "application/json"
             MessageStr &= "\r\r" & "[" & Format(Now, "yyyy-MM-dd HH:mm") & "] Push From @Bark"
             MessageStr = Replace(MessageStr, "<", "《")
