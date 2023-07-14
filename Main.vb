@@ -39,8 +39,8 @@ Public Class Main
     Sub CheckNew()
         RichTextBox2.Text &= "> " & "[" & Now.ToString & "]运行检测." & vbCrLf
         For i = 0 To SubjectArrList.Count - 1
-            Dim oldSubject As Subject = SubjectArrList(i)
-            Dim newSubject As Subject = EpRead(oldSubject)
+            Dim oldSubject As new Subject = SubjectArrList(i)
+            Dim newSubject As new Subject = EpRead(oldSubject)
             If newSubject.epDates <> oldSubject.epDates Then
                 Dim PushStr As String = newSubject.Name & "(ep." & newSubject.epNum & ")" & vbCrLf
                 PushStr &= " 【" & newSubject.epName & "】@" & newSubject.epDates.ToShortDateString
