@@ -39,8 +39,8 @@ Public Class Main
     Sub CheckNew()
         RichTextBox2.Text &= "> " & "[" & Now.ToString & "]运行检测." & vbCrLf
         For i = 0 To SubjectArrList.Count - 1
-            Dim oldSubject As new Subject = SubjectArrList(i)
-            Dim newSubject As new Subject = EpRead(oldSubject)
+            Dim oldSubject As Subject = SubjectArrList(i)
+            Dim newSubject As Subject = EpRead(oldSubject)
             If newSubject.epDates <> oldSubject.epDates Then
                 Dim PushStr As String = newSubject.Name & "(ep." & newSubject.epNum & ")" & vbCrLf
                 PushStr &= " 【" & newSubject.epName & "】@" & newSubject.epDates.ToShortDateString
@@ -185,30 +185,33 @@ Public Class Main
     End Function
     Function EpRead(ByVal SubjectInfo_ep As Subject) As Subject
         json = JsonConvert.DeserializeObject(GetData("https://api.bgm.tv/v0/episodes?subject_id=" & SubjectInfo_ep.SubId & "&type=0&limit=100&offset=0"))
-        jt = json("data")
-        Dim jarray As JArray = JsonConvert.DeserializeObject(jt.ToString)
-        Dim NextFlag As Boolean = False
-        For i = 0 To jarray.Count - 1
-            Dim epName_temp As String
-            Dim epDates_temp As String
-            Dim epNum_temp As Integer
-            json = JsonConvert.DeserializeObject(jarray(i).ToString)
-            epDates_temp = json("airdate").ToString
-            epName_temp = json("name_cn").ToString
-            If epName_temp.Length <= 0 Then
-                epName_temp = json("name").ToString
-            End If
-            epNum_temp = json("ep")
-            If epDates_temp < Now Then
-                SubjectInfo_ep.epName = epName_temp
-                SubjectInfo_ep.epDates = epDates_temp
-                SubjectInfo_ep.epNum = epNum_temp
-            ElseIf NextFlag = False Then
-                NextFlag = True
-                SubjectInfo_ep.epName_Next = epName_temp
-                SubjectInfo_ep.epDates_Next = epDates_temp
-            End If
-        Next
+        Try
+            jt = json("data")
+            Dim jarray As JArray = JsonConvert.DeserializeObject(jt.ToString)
+            Dim NextFlag As Boolean = False
+            For i = 0 To jarray.Count - 1
+                Dim epName_temp As String
+                Dim epDates_temp As String
+                Dim epNum_temp As Integer
+                json = JsonConvert.DeserializeObject(jarray(i).ToString)
+                epDates_temp = json("airdate").ToString
+                epName_temp = json("name_cn").ToString
+                If epName_temp.Length <= 0 Then
+                    epName_temp = json("name").ToString
+                End If
+                epNum_temp = json("ep")
+                If epDates_temp < Now Then
+                    SubjectInfo_ep.epName = epName_temp
+                    SubjectInfo_ep.epDates = epDates_temp
+                    SubjectInfo_ep.epNum = epNum_temp
+                ElseIf NextFlag = False Then
+                    NextFlag = True
+                    SubjectInfo_ep.epName_Next = epName_temp
+                    SubjectInfo_ep.epDates_Next = epDates_temp
+                End If
+            Next
+        Catch ex As Exception
+        End Try
         Return SubjectInfo_ep
     End Function
     Private Sub ListBox1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ListBox1.SelectedIndexChanged
