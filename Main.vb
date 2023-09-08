@@ -10,6 +10,7 @@ Imports Newtonsoft.Json.Linq
 Public Class Main
     Dim BgmId As String
     Dim PushUrl As String
+    Dim CheckInterval As Integer
     Friend WithEvents FreshTimer As New System.Windows.Forms.Timer
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.Text = My.Application.Info.AssemblyName & "[" & My.Application.Info.Version.ToString & "]"
@@ -24,17 +25,27 @@ Public Class Main
         Else
             GroupBox1.Text = "null"
         End If
+        ClockTime = DateAdd(DateInterval.Hour, Int（Math.Max(CheckInterval, 1)）, Now)
+        ClockTime = Convert.ToDateTime(ClockTime.ToShortDateString & " " & ClockTime.Hour & ":00:00")
         FreshTimer.Interval = 1000
         FreshTimer.Enabled = True
     End Sub
     Private Sub FreshTimerE(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FreshTimer.Tick
-        ToolStripStatusLabel1.Text = ReminderTimStr()
-        If Now.Second = 0 AndAlso Now.Minute = 0 Then
+        If Now.Second = 0 AndAlso Now.Minute = 0 AndAlso Now > ClockTime Then
             CheckNew()
-            If Now.Hour = 0 Then
-                RichTextBox2.Text &= SubjectRead(GetData("https://api.bgm.tv/v0/users/" & BgmId & "/collections?subject_type=2&type=3&limit=30&offset=0"))
-            End If
+            Do
+                ClockTime = DateAdd(DateInterval.Hour, Int（Math.Max(CheckInterval, 1)）, Now)
+                ClockTime = Convert.ToDateTime(ClockTime.ToShortDateString & " " & ClockTime.Hour & ":00:00")
+            Loop While ClockTime > Now
+            RichTextBox2.SelectionLength = RichTextBox2.TextLength
+            RichTextBox2.ScrollToCaret()
         End If
+        If Now.Second < 1 AndAlso Now.Minute = 0 AndAlso Now.Hour = 0 Then
+            RichTextBox2.Text &= SubjectRead(GetData("https://api.bgm.tv/v0/users/" & BgmId & "/collections?subject_type=2&type=3&limit=30&offset=0"))
+            RichTextBox2.SelectionLength = RichTextBox2.TextLength
+            RichTextBox2.ScrollToCaret()
+        End If
+        ToolStripStatusLabel1.Text = ReminderTimStr()
     End Sub '刷新计时器
     Sub CheckNew()
         RichTextBox2.Text &= "> " & "[" & Now.ToString & "]运行检测." & vbCrLf
@@ -50,8 +61,8 @@ Public Class Main
             End If
         Next
     End Sub
+    Dim ClockTime As Date
     Function ReminderTimStr() As String
-        Dim ClockTime As Date = DateAdd(DateInterval.Hour, 1, Now)
         Return CulCulateLastTimeText(DateDiff(DateInterval.Second, Now, Convert.ToDateTime(ClockTime.ToShortDateString & " " & ClockTime.Hour & ":00:00")), 1)
     End Function
     Public Function CulCulateLastTimeText(ByVal Time As Int64, ByVal IntevalType As Integer) As String
@@ -111,14 +122,19 @@ Public Class Main
                     'Dim NodeList_Version As XmlNodeList = xmlDoc.SelectSingleNode("KavSetting").SelectSingleNode("UpdateLog").ChildNodes '获取节点的所有子节点
                     BgmId = CType(xmlDoc.SelectSingleNode("BgmReminderSetting").SelectSingleNode("BgmId"), XmlElement).InnerText
                     PushUrl = CType(xmlDoc.SelectSingleNode("BgmReminderSetting").SelectSingleNode("PushUrl"), XmlElement).InnerText
+                    Dim CheckIntervalStr As String = CType(xmlDoc.SelectSingleNode("BgmReminderSetting").SelectSingleNode("CheckInterval"), XmlElement).InnerText
                     If BgmId.Length <= 0 Then
                         MessageBox.Show("请正确配置Bangumi账号<bgmId>.")
                         Diagnostics.Process.Start("notepad.exe", SettingPath)
                         'Me.Close()
-                    ElseIf PushUrl.Length <= 0 Then
-                        MessageBox.Show("请正确配置推送地址<PushUrl>.")
+                    ElseIf PushUrl.Length <= 0 AndAlso MsgBox("请正确配置推送地址<PushUrl>.", MsgBoxStyle.OkCancel, "是否重新配置?") = MsgBoxResult.Ok Then
                         Diagnostics.Process.Start("notepad.exe", SettingPath)
                         'Me.Close()
+                    ElseIf CheckIntervalstr.Length <= 0 AndAlso MsgBox("请正确配置检测间隔时间<CheckInterval>.", MsgBoxStyle.OkCancel, "是否重新配置?") = MsgBoxResult.Ok Then
+                        Diagnostics.Process.Start("notepad.exe", SettingPath)
+                        'Me.Close()
+                    Else
+                        CheckInterval = Int(CheckIntervalStr)
                     End If
                 Else
                     MessageBox.Show("空白的配置文件" & SettingPath)
