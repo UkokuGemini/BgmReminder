@@ -36,7 +36,7 @@ Public Class Main
             Do
                 ClockTime = DateAdd(DateInterval.Hour, Int（Math.Max(CheckInterval, 1)）, Now)
                 ClockTime = Convert.ToDateTime(ClockTime.ToShortDateString & " " & ClockTime.Hour & ":00:00")
-            Loop While ClockTime > Now
+            Loop While ClockTime < Now
             RichTextBox2.SelectionLength = RichTextBox2.TextLength
             RichTextBox2.ScrollToCaret()
         End If
